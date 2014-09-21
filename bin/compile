@@ -177,8 +177,8 @@ if [ ! -e $CACHE_DIR/ghc-$GHC_VER ]; then
     ./configure --prefix $WORKING_HOME/vendor/ghc-$GHC_VER
     make install
   fi
-  echo "-----> Caching GHC $GHC_VER binaries"
-  cp -R $WORKING_HOME/vendor/ghc-$GHC_VER $CACHE_DIR
+  #echo "-----> Caching GHC $GHC_VER binaries"
+  #cp -R $WORKING_HOME/vendor/ghc-$GHC_VER $CACHE_DIR
 else
   echo "-----> Restoring cached GHC $GHC_VER binaries"
   rm -fr $WORKING_HOME/vendor/ghc-$GHC_VER
@@ -219,17 +219,31 @@ fi
 
 ########## project build ###########################################
 
-cd $WORKING_HOME
-cabal sandbox init
-
 cd $BUILD_DIR
-cabal sandbox init --sandbox $WORKING_HOME/.cabal-sandbox
 
-if [ -e $CACHE_DIR/.cabal-sandbox ]; then
-  echo "-----> Restoring cached cabal sandbox"
-  rm -fr $WORKING_HOME/.cabal-sandbox
-  cp -R $CACHE_DIR/.cabal-sandbox $WORKING_HOME
-fi
+mkdir /app/.cabal/
+
+cat >/app/.cabal/config <<EOF
+remote-repo: stackage:http://www.stackage.org/stackage/aecbf72b568a63e86a971311fee5475f076043cc
+remote-repo-cache: /app/.cabal/packages
+world-file: /app/.cabal/world
+extra-prog-path: /app/.cabal/bin
+build-summary: /app/.cabal/logs/build.log
+remote-build-reporting: anonymous
+jobs: \$ncpus
+
+haddock
+
+install-dirs user
+
+install-dirs global
+
+program-locations
+
+program-default-options
+
+EOF
+
 
 echo "-----> Getting newest list of cabal packages"
 cabal update
