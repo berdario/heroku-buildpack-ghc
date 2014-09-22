@@ -177,8 +177,8 @@ if [ ! -e $CACHE_DIR/ghc-$GHC_VER ]; then
     ./configure --prefix $WORKING_HOME/vendor/ghc-$GHC_VER
     make install
   fi
-  #echo "-----> Caching GHC $GHC_VER binaries"
-  #cp -R $WORKING_HOME/vendor/ghc-$GHC_VER $CACHE_DIR
+  echo "-----> Caching GHC $GHC_VER binaries"
+  cp -R $WORKING_HOME/vendor/ghc-$GHC_VER $CACHE_DIR
 else
   echo "-----> Restoring cached GHC $GHC_VER binaries"
   rm -fr $WORKING_HOME/vendor/ghc-$GHC_VER
